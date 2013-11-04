@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:jdbc-ee="http://www.mulesoft.org/schema/mule/ee/jdbc" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/jdbc http://www.mulesoft.org/schema/mule/ee/jdbc/current/mule-jdbc-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	
+    <configuration doc:name="Configuration">
+		<expression-language autoResolveVariables="true">
+			<import class="org.mule.util.StringUtils" />
+		</expression-language>
+	</configuration>
+    <jdbc-ee:mysql-data-source name="MySQL_Data_Source" user="root" password="admin" url="jdbc:mysql://localhost:3306/sakila" transactionIsolation="UNSPECIFIED" doc:name="MySQL Data Source"/>
+    <jdbc-ee:connector name="MySQL_Connector" dataSource-ref="MySQL_Data_Source" validateConnections="true" queryTimeout="-1" pollingFrequency="0" doc:name="Database">
+    </jdbc-ee:connector>
+    <flow name="FileToDBFlow1" doc:name="FileToDBFlow1">
+        <file:inbound-endpoint path="C:\MuleWS\filetodb\input" responseTimeout="10000" doc:name="File"/>
+        <object-to-string-transformer doc:name="Object to String"/>
+        <splitter expression="#[StringUtils.split(message.payload, '\n\r')]" doc:name="Splitter"/>
+        <expression-transformer expression="#[StringUtils.split(message.payload, ',')]"  doc:name="Expression"/>
+        <jdbc-ee:outbound-endpoint exchange-pattern="one-way"  queryTimeout="-1" doc:name="Database" connector-ref="MySQL_Connector" queryKey="EmployeeInfo">
+            <jdbc-ee:query key="EmployeeInfo" value="INSERT INTO employee_info(emp_id, emp_name, emp_address,emp_salary) VALUES (#[message.payload[0]],#[message.payload[1]],#[message.payload[2]],#[message.payload[3]])"/>
+        </jdbc-ee:outbound-endpoint>
+    </flow>
+</mule>

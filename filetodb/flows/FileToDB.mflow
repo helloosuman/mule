@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mule-configuration xmlns="http://www.mulesoft.com/tooling/messageflow" name="FileToDB">
+    <global-element name="Configuration" type="http://www.mulesoft.org/schema/mule/core/configuration" entity-id="Configuration#1">
+        <properties>
+            <property name="defaultExceptionStrategy-ref"/>
+            <property name="auxiliary;index" value="1"/>
+        </properties>
+    </global-element>
+    <global-element name="MySQL Data Source" type="http://www.mulesoft.org/schema/mule/ee/jdbc/mysql-data-source" entity-id="MySQL Data Source#1">
+        <properties>
+            <property name="port"/>
+            <property name="host"/>
+            <property name="name" value="MySQL_Data_Source"/>
+            <property name="loginTimeout"/>
+            <property name="transactionIsolation" value="UNSPECIFIED"/>
+            <property name="password" value="admin"/>
+            <property name="user" value="root"/>
+            <property name="auxiliary;index" value="4"/>
+            <property name="database"/>
+            <property name="url" value="jdbc:mysql://localhost:3306/sakila"/>
+        </properties>
+    </global-element>
+    <global-element name="Database" type="http://www.mulesoft.org/schema/mule/ee/jdbc/connector" entity-id="Database#1">
+        <properties>
+            <property name="dispatcherPoolFactory-ref"/>
+            <property name="transactionPerMessage"/>
+            <property name="resultSetHandler-ref"/>
+            <property name="dataSource-ref to Bean" value="MySQL_Data_Source"/>
+            <property name="pollingFrequency" value="0"/>
+            <property name="queryTimeout" value="-1"/>
+            <property name="name" value="MySQL_Connector"/>
+            <property name="validateConnections" value="true"/>
+            <property name="dynamicNotification"/>
+            <property name="queryRunner-ref"/>
+            <property name="auxiliary;index" value="5"/>
+            <property name="dataSource-ref to JDBC DataSource" value="MySQL_Data_Source"/>
+        </properties>
+    </global-element>
+    <flow SubFlow="false" name="FileToDBFlow1" entity-id="b7a1b292-d92b-4e04-b782-12cc1a104d50">
+        <properties>
+            <property name="processingStrategy"/>
+            <property name="processingStrategy2"/>
+            <property name="bussinessEventsLabel"/>
+            <property name="auxiliary;index" value="6"/>
+            <property name="tracking:enable-default-events"/>
+        </properties>
+        <lane hadOnlyOneElement="false" index="0" isChoiceOtherwiseLane="false" entity-id="compartment-lane#1">
+            <graphicalData x="0" y="0" width="0" height="0"/>
+            <endpoint direction="Inbound" message-exchange-pattern="OneWay" name="File" type="http://www.mulesoft.org/schema/mule/file/endpoint" entity-id="File#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="reverseOrder"/>
+                    <property name="moveToPattern"/>
+                    <property name="pollingFrequency"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="comparator"/>
+                    <property name="disableTransportTransformer"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="tracking:enable-default-events"/>
+                    <property name="ref"/>
+                    <property name="transformer-refs"/>
+                    <property name="moveToDirectory"/>
+                    <property name="address"/>
+                    <property name="fileAge"/>
+                    <property name="path" value="C:\MuleWS\filetodb\input"/>
+                    <property name="encoding"/>
+                    <property name="outputPattern"/>
+                    <property name="auxiliary;index" value="7"/>
+                    <property name="mimeType"/>
+                    <property name="responseTimeout" value="10000"/>
+                    <property name="connector-ref"/>
+                </properties>
+            </endpoint>
+            <pattern name="Object to String" type="http://www.mulesoft.org/schema/mule/core/object-to-string-transformer" entity-id="Object to String#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="encoding"/>
+                    <property name="auxiliary;index" value="8"/>
+                    <property name="mimeType"/>
+                </properties>
+            </pattern>
+            <pattern name="Splitter" type="org.mule.tooling.ui.modules.core.pattern.splitter" entity-id="Splitter#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="expression" value="#[StringUtils.split(message.payload, '\n\r')]"/>
+                    <property name="businessEventsLabel"/>
+                    <property name="custom-evaluator"/>
+                    <property name="enableCorrelation"/>
+                    <property name="evaluator"/>
+                    <property name="auxiliary;index" value="9"/>
+                    <property name="tracking:enable-default-events"/>
+                </properties>
+            </pattern>
+            <pattern name="Expression" type="http://www.mulesoft.org/schema/mule/core/expression-transformer" entity-id="Expression#1">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="expression" value="#[StringUtils.split(message.payload, ',')]"/>
+                    <property name="returnClass"/>
+                    <property name="ignoreBadInput"/>
+                    <property name="returnSourceIfNull"/>
+                    <property name="custom-evaluator"/>
+                    <property name="encoding"/>
+                    <property name="evaluator"/>
+                    <property name="auxiliary;index" value="10"/>
+                    <property name="mimeType"/>
+                </properties>
+            </pattern>
+            <endpoint direction="Outbound" message-exchange-pattern="OneWay" name="Database" type="http://www.mulesoft.org/schema/mule/ee/jdbc/endpoint" entity-id="Database#2">
+                <graphicalData x="0" y="0" width="0" height="0"/>
+                <properties>
+                    <property name="" value=""/>
+                    <property name="auxiliary;erased;mimeType" value="true"/>
+                    <property name="businessEventsLabel" value=""/>
+                    <property name="queryTimeout" value="-1"/>
+                    <property name="disableTransportTransformer" value="false"/>
+                    <property name="exchange-pattern" value="one-way"/>
+                    <property name="queryKey" value="EmployeeInfo"/>
+                    <property name="tracking:enable-default-events" value="false"/>
+                    <property name="ref" value=""/>
+                    <property name="transformer-refs" value=""/>
+                    <property name="updated"/>
+                    <property name="address" value=""/>
+                    <property name="auxiliary;erased;encoding" value="true"/>
+                    <property name="encoding" value=""/>
+                    <property name="auxiliary;index" value="11"/>
+                    <property name="mimeType" value=""/>
+                    <property name="responseTimeout" value=""/>
+                    <property name="auxiliary;erased;responseTimeout" value="true"/>
+                    <property name="connector-ref" value="MySQL_Connector"/>
+                    <property-collection name="@http://www.mulesoft.org/schema/mule/ee/jdbc/query;1171648461">
+                        <property name="value" value="INSERT INTO employee_info(emp_id, emp_name, emp_address,emp_salary) VALUES (#[message.payload[0]],#[message.payload[1]],#[message.payload[2]],#[message.payload[3]])"/>
+                        <property name="isProcessed$$$$" value="true"/>
+                        <property name="value-ref" value=""/>
+                        <property name="key" value="EmployeeInfo"/>
+                    </property-collection>
+                </properties>
+                <description></description>
+            </endpoint>
+        </lane>
+        <apikit>false</apikit>
+    </flow>
+    <description></description>
+</mule-configuration>
