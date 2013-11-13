@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" 
+xmlns:cxf="http://www.mulesoft.org/schema/mule/cxf" 
+xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:management="http://www.mulesoft.org/schema/mule/management"
+xsi:schemaLocation=
+"http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/management http://www.mulesoft.org/schema/mule/management/current/mule-management.xsd
+http://www.mulesoft.org/schema/mule/cxf http://www.mulesoft.org/schema/mule/cxf/current/mule-cxf.xsd">
+		<spring:beans>
+	        <spring:bean id="ServiceBeanId" class="com.suman.mule.HelloService" />
+        </spring:beans>
+     <management:jmx-default-config registerMx4jAdapter="true"/>
+    <flow name="SOAPWebServiceInMuleFlow1" doc:name="SOAPWebServiceInMuleFlow1">
+        <http:inbound-endpoint exchange-pattern="request-response" host="localhost" port="8081" doc:name="HTTP" path="services/GreetingService"/>
+        <cxf:jaxws-service doc:name="SOAP" serviceClass="com.suman.mule.HelloService"/>        
+        <component doc:name="SayHello">
+            <spring-object bean="ServiceBeanId"/>
+        </component>
+    </flow>
+</mule>
