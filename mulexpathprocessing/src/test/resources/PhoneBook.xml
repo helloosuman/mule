@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ivan:PhoneBook
+	xmlns:ivan="http://www.ivan.com/schemas/addressbook"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<ivan:Person lastUpdate="2011-07-21" category="actor">
+			<ivan:FirstName>Gösta</ivan:FirstName>
+			<ivan:LastName>Ekman</ivan:LastName>
+			<ivan:Phone>044-123123</ivan:Phone>
+		</ivan:Person>
+		<ivan:Person lastUpdate="2011-07-22" category="athlete">
+			<ivan:FirstName>J-O</ivan:FirstName>
+			<ivan:LastName>Waldner</ivan:LastName>
+			<ivan:Phone>08-12312312</ivan:Phone>
+		</ivan:Person>
+		<ivan:Person lastUpdate="2010-12-11" category="actor">
+			<ivan:FirstName>Dolph</ivan:FirstName>
+			<ivan:LastName>Lundgren</ivan:LastName>
+			<ivan:Phone>0706-32132156</ivan:Phone>
+		</ivan:Person>
+</ivan:PhoneBook>

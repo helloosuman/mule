@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file"
+	xmlns="http://www.mulesoft.org/schema/mule/core" 
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" 
+	xmlns:spring="http://www.springframework.org/schema/beans" version="EE-3.4.0" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:mule-xml="http://www.mulesoft.org/schema/mule/xml"
+	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/xml http://www.mulesoft.org/schema/mule/xml/current/mule-xml.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd">
+
+	<!--This element declares a global namespace manager which links namespace prefixes and URIs.
+		Support for a global namespace manager in the XPath transformer was not implemented until in Mule 3.2.
+	-->
+	
+	<!-- <mule-xml:namespace-manager includeConfigNamespaces="false">
+		<mule-xml:namespace prefix="ivan" uri="http://www.ivan.com/schemas/addressbook"/>
+	</mule-xml:namespace-manager> -->
+    <file:connector name="fileConnector" autoDelete="true" streaming="false" validateConnections="true" doc:name="File">
+        <file:expression-filename-parser/>
+    </file:connector>
+	
+	<flow name="xpathProcessingFlow" doc:name="xpathProcessingFlow">
+		<!--Input endpoint receiving XML files from a directory.-->
+		<file:inbound-endpoint connector-ref="fileConnector"  path="C:\MuleStudioWS\mulexpathprocessing\input" doc:name="File" responseTimeout="10000">
+			<file:filename-wildcard-filter pattern="*.xml"/>
+			<!--Must transform the XML data to DOM in order to receive a DOM node as result fo the XPath transform.
+			Otherwise we will receive the contents of the elements in the extracted XML fragment.
+			-->
+			<mule-xml:xml-to-dom-transformer returnClass="org.w3c.dom.Document" />
+			<!--Extract a person from the phonebook which is alone in his/her category.
+			-->
+			<mule-xml:xpath-extractor-transformer 
+				expression="/ivan:PhoneBook/ivan:Person[not(@category=following-sibling::ivan:Person/@category)]"  resultType="NODE">
+			<!--
+			If using Mule < 3.2 or Mule >= 3.2 without a global namespace manager, namespace prefixes and URIs
+			must be linked this way. With Mule 3.2, the <mule-xml:namespace> element can be
+			commented out since we have a global namespace manager 	in this configuration file.	-->
+			
+			<mule-xml:namespace prefix="ivan" uri="http://www.ivan.com/schemas/addressbook"/>
+			
+			</mule-xml:xpath-extractor-transformer>
+			<!--Must transform the message from DOM to text to make the resulting XML readable.	-->
+			<mule-xml:dom-to-xml-transformer/>
+		</file:inbound-endpoint>
+		<file:outbound-endpoint path="C:\MuleStudioWS\mulexpathprocessing\output" outputPattern="#[header:originalFilename]" doc:name="File" responseTimeout="10000">
+			<!-- Format the XML so that it is easier to read. -->
+			<mule-xml:xml-prettyprinter-transformer/>
+		</file:outbound-endpoint>
+	</flow>
+</mule>

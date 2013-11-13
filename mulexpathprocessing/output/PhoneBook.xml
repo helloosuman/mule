@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<ivan:Person xmlns:ivan="http://www.ivan.com/schemas/addressbook" category="athlete" lastUpdate="2011-07-22">  
+  <ivan:FirstName>J-O</ivan:FirstName>  
+  <ivan:LastName>Waldner</ivan:LastName>  
+  <ivan:Phone>08-12312312</ivan:Phone> 
+</ivan:Person>
